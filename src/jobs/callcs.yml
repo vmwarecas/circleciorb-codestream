@@ -1,0 +1,19 @@
+description: |
+  Authenticates to the VMware Cloud Service Platform, obtains a bearer token, and calls a Code Stream pipeline via API using the pipeline ID
+
+parameters:
+  csp_token:
+    description: Refresh token from VMware Cloud Services Platform
+    type: env_var_name
+    default: CSP_REFRESH_TOKEN
+  pipeline_id:
+    description: ID for a Code Stream pipeline
+    type: env_var_name
+    default: PIPELINE_ID
+
+executor: python
+
+steps:
+  - authenticate:
+      csp_token: << parameters.csp_token >>
+      pipeline_id: <<parameters.pipeline_id>>

@@ -1,0 +1,28 @@
+description: Authenticate to Code Stream and Execute Pipeline
+
+parameters:
+  csp_token:
+    default: CSP_REFRESH_TOKEN
+    type: env_var_name
+  pipeline_id:
+    default: PIPELINE_ID
+    type: env_var_name
+
+steps:
+  - run:
+      name: Configure Variables
+      command: |
+        echo "export json='Content-Type:application/json'" >> $BASH_ENV
+        echo "export auth='{"refreshToken":"$<<parameters.csp_token>>"}'" >> $BASH_ENV
+        echo "export data='{"comments": "execute", "input": {}}'" >> $BASH_ENV
+        echo "export url='https://api.mgmt.cloud.vmware.com/pipeline/api/pipelines/"$<<parameters.pipeline_id>>"/executions'" >> $BASH_ENV
+  - run:
+      name: Export Authentication Header
+      command: |
+        source $BASH_ENV
+        echo "export header='Authorization: Bearer $(curl -X POST https://api.mgmt.cloud.vmware.com/iaas/login -H $json -d $auth | jq -r .token)'" >> $BASH_ENV
+  - run:
+      name: Execute API Call 
+      command: |
+        source $BASH_ENV
+        curl -X POST $url -H $json -H "$header" -d "$data"

@@ -1,0 +1,52 @@
+commands:
+  authenticate:
+    description: Authenticate to Code Stream and Execute Pipeline
+    parameters:
+      csp_token:
+        default: CSP_REFRESH_TOKEN
+        type: env_var_name
+      pipeline_id:
+        default: PIPELINE_ID
+        type: env_var_name
+    steps:
+    - run:
+        command: |
+          echo "export json='Content-Type:application/json'" >> $BASH_ENV
+          echo "export auth='{"refreshToken":"$<<parameters.csp_token>>"}'" >> $BASH_ENV
+          echo "export data='{"comments": "execute", "input": {}}'" >> $BASH_ENV
+          echo "export url='https://api.mgmt.cloud.vmware.com/pipeline/api/pipelines/"$<<parameters.pipeline_id>>"/executions'" >> $BASH_ENV
+        name: Configure Variables
+    - run:
+        command: |
+          source $BASH_ENV
+          echo "export header='Authorization: Bearer $(curl -X POST https://api.mgmt.cloud.vmware.com/iaas/login -H $json -d $auth | jq -r .token)'" >> $BASH_ENV
+        name: Export Authentication Header
+    - run:
+        command: |
+          source $BASH_ENV
+          curl -X POST $url -H $json -H "$header" -d "$data"
+        name: Execute API Call
+description: An Orb for Calling Code Stream Pipelines
+executors:
+  python:
+    docker:
+    - image: circleci/python:latest
+jobs:
+  callcs:
+    description: |
+      Authenticates to the VMware Cloud Service Platform, obtains a bearer token, and calls a Code Stream pipeline via API using the pipeline ID
+    executor: python
+    parameters:
+      csp_token:
+        default: CSP_REFRESH_TOKEN
+        description: Refresh token from VMware Cloud Services Platform
+        type: env_var_name
+      pipeline_id:
+        default: PIPELINE_ID
+        description: ID for a Code Stream pipeline
+        type: env_var_name
+    steps:
+    - authenticate:
+        csp_token: << parameters.csp_token >>
+        pipeline_id: <<parameters.pipeline_id>>
+version: 2.1
