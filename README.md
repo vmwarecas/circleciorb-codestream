@@ -1,4 +1,4 @@
-# CircleCI Orb for Executing Code Stream Pipelines 
+# CircleCI Orb for Executing VMware Code Stream (SaaS) Pipelines 
 
 CircleCI Orbs provide an easy way to execute integration tasks as a part of the CI/CD process that CircleCI executes. 
 This Orb specifically executes a Code Stream pipeline by ID. The pipeline has 2 required inputs: 
