@@ -2,4 +2,6 @@ version: 2.1
 
 description: >
   Execute VMware Cloud Automation Services: Code Stream pipelines as a part of CircleCI jobs
-  Repo: https://github.com/vmwarecas/circleciorb-codestream
+display:
+  home_url: https://cloud.vmware.com/code-stream
+  source_url: https://github.com/vmwarecas/circleciorb-codestream
